@@ -8,7 +8,7 @@ var assigner = require('assigner');
 
 module.exports.loop = function () {
     var current_lvl = Game.rooms[room_name].controller.level;
-    if(current_lvl == 1 && _.filter(Game.creeps).length <2 ){
+    if(current_lvl <= 2 && _.filter(Game.creeps).length < (4*current_lvl) ){
         console.log("need first wave");
         Game.spawns[spawn_name].spawnCreep(wave_creep_1, "wave_1"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
     }
