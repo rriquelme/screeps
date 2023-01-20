@@ -11,6 +11,10 @@ module.exports.loop = function () {
     if(current_lvl <= 2 && _.filter(Game.creeps).length < (4*current_lvl) ){
         console.log("need first wave");
         Game.spawns[spawn_name].spawnCreep(wave_creep_1, "wave_1"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
+    }else if (current_lvl == 3 && _.filter(Game.creeps).length < 8){
+        Game.spawns[spawn_name].spawnCreep(wave_creep_1, "wave_1"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
+
+
     }
     //var wave_creeps = _.filter(Game.creeps, (creep) => creep.memory.role == "wave_1").length;
 
