@@ -2,15 +2,27 @@ var firstWave = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        if (creep.store.getFreeCapacity() == 0 || creep.memory.state == "full"){
+
+        if (creep.memory.state == "upgrading"){
+            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+            if (creep.store[RESOURCE_ENERGY] == 0){
+                creep.memory.state = "mining"
+            }
+
+        }else if (creep.store.getFreeCapacity() == 0 || creep.memory.state == "full"){
             creep.memory.state = "full";
             // Go to do other things
-            var to_supply = creep.pos.findClosestByPath(FIND_STRUCTURES, {filter: (structure) => {return (structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;}});
+            var to_supply = creep.pos.findClosestByPath(FIND_STRUCTURES, {filter: (structure) => {return (structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_EXTENSION) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;}});
             var to_build = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             if (to_supply){
                 if(creep.transfer(to_supply, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(to_supply, {visualizePathStyle: {stroke: '#ffff00'}});
     	        }
+            }else if (_.filter(Game.creeps, (creep) => creep.memory.state == "upgrading").length <1){
+                creep.memory.state = "upgrading";
+            
             }else if(to_build){
                 if(creep.build(to_build) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(to_build, {visualizePathStyle: {stroke: '#ffffff'}});
