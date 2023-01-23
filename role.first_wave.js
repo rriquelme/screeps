@@ -46,7 +46,12 @@ var firstWave = {
             // Mine from nearest
             creep.memory.state = "mining";
             //creep.say(creep.memory.source);
-            if (!creep.memory.source){
+            var on_floor = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+            if (on_floor){
+                if(creep.pickup(on_floor) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(on_floor);
+                }
+            } else if (!creep.memory.source){
                 creep.memory.source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE).id;
                 //creep.say("hola1");
             } else if (Game.getObjectById(creep.memory.source).energy == 0){
