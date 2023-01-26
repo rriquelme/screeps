@@ -1,3 +1,4 @@
+var bf = require('basic_funtions');
 var firstWave = {
 
     /** @param {Creep} creep **/
@@ -16,18 +17,14 @@ var firstWave = {
             // Go to do other things
             var to_supply = creep.pos.findClosestByPath(FIND_STRUCTURES, {filter: (structure) => {return (structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_EXTENSION) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;}});
             var to_build = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
-            var to_repair = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: object => object.hits< object.hitsMax*0.9 && object.structureType!=STRUCTURE_WALL});
+            var to_repair = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: object => object.hits< object.hitsMax*0.95 && object.structureType!=STRUCTURE_WALL});
             if (to_supply){
-                if(creep.transfer(to_supply, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(to_supply, {visualizePathStyle: {stroke: '#ffff00'}});
-    	        }
+                bf.go_to_supply(creep,to_supply);
             }else if (_.filter(Game.creeps, (creep) => creep.memory.state == "upgrading").length <1){
                 creep.memory.state = "upgrading";
             
             }else  if (to_repair){
-                if(creep.repair(to_repair) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(to_repair, {visualizePathStyle: {stroke: '#0000ff'}});
-                }
+                bf.go_to_repair(creep,to_repair);
             }else if(to_build){
                 if(creep.build(to_build) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(to_build, {visualizePathStyle: {stroke: '#ffffff'}});
@@ -47,7 +44,7 @@ var firstWave = {
             creep.memory.state = "mining";
             //creep.say(creep.memory.source);
             var on_floor = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
-            if (on_floor){
+            if (on_floor && on_floor.amount >100 ){
                 if(creep.pickup(on_floor) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(on_floor);
                 }
