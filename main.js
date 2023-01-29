@@ -19,8 +19,9 @@ module.exports.loop = function () {
         Game.spawns[spawn_name].spawnCreep(wave_creep_4, "wave_4"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
         Game.spawns[spawn_name].spawnCreep(wave_creep_3, "wave_3"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
         //Game.spawns[spawn_name].spawnCreep(wave_creep_1, "wave_1"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
-        if (_.filter(Game.creeps).length < 1){
+        if (_.filter(Game.creeps).length < 3){
             Game.spawns[spawn_name].spawnCreep(wave_creep_2, "wave_2"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
+            Game.spawns[spawn_name].spawnCreep(wave_creep_1, "wave_1"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
         }
         //Game.spawns[spawn_name].spawnCreep(wave_creep_2, "wave_2"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
         
