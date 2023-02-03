@@ -11,17 +11,18 @@ var assigner = require('assigner');
 
 module.exports.loop = function () {
     var current_lvl = Game.rooms[room_name].controller.level;
-    if(current_lvl <= 2 && _.filter(Game.creeps).length < (4*current_lvl) ){
+    var _count_creeps = _.filter(Game.creeps).length;
+    if(current_lvl <= 2 && _count_creeps < (4*current_lvl) ){
         console.log("need first wave");
         Game.spawns[spawn_name].spawnCreep(wave_creep_2, "wave_2_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
         Game.spawns[spawn_name].spawnCreep(wave_creep_1, "wave_1_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
-    }else if (current_lvl >= 3 && _.filter(Game.creeps).length < 8){
+    }else if (current_lvl >= 3 && _count_creeps < 8){
         console.log("need fourth wave");
         Game.spawns[spawn_name].spawnCreep(wave_creep_4, "wave_4_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
         //Game.spawns[spawn_name].spawnCreep(wave_creep_1, "wave_1_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
-        if (_.filter(Game.creeps).length < 6 && _.filter(Game.creeps).length >= 3){
+        if (_count_creeps < 6 && _count_creeps >= 3){
             Game.spawns[spawn_name].spawnCreep(wave_creep_3, "wave_3_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
-        } else  if (_.filter(Game.creeps).length < 3){
+        } else  if (_count_creeps < 3){
             Game.spawns[spawn_name].spawnCreep(wave_creep_2, "wave_2_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
             Game.spawns[spawn_name].spawnCreep(wave_creep_1, "wave_1_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
         }
