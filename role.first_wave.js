@@ -15,7 +15,7 @@ var firstWave = {
         }else if (creep.store.getFreeCapacity() == 0 || creep.memory.state == "full"){
             creep.memory.state = "full";
             // Go to do other things
-            var to_supply = creep.pos.findClosestByPath(FIND_STRUCTURES, {filter: (structure) => {return (structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_EXTENSION) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;}});
+            var to_supply = creep.pos.findClosestByPath(FIND_STRUCTURES, {filter: (structure) => {return (structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_TOWER) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;}});
             var to_build = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             var to_repair = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: object => object.hits< object.hitsMax*0.95 && object.structureType!=STRUCTURE_WALL});
             if (to_supply){

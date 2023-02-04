@@ -10,6 +10,15 @@ var basic_miner = [WORK,WORK,MOVE,MOVE];//300
 var assigner = require('assigner');
 
 module.exports.loop = function () {
+    var tower = Game.getObjectById('63cef85d2769d0bb5c23646c');
+    if(tower) {
+        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        if(closestHostile) {
+            tower.attack(closestHostile);
+        }
+    }
+    
+    
     var current_lvl = Game.rooms[room_name].controller.level;
     var _count_creeps = _.filter(Game.creeps).length;
     if(current_lvl <= 2 && _count_creeps < (4*current_lvl) ){
