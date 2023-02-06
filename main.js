@@ -10,12 +10,15 @@ var basic_miner = [WORK,WORK,MOVE,MOVE];//300
 var assigner = require('assigner');
 
 module.exports.loop = function () {
-    var tower = Game.getObjectById('63cef85d2769d0bb5c23646c');
-    if(tower) {
-        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+    var hostile_creeps = Game.spawns[spawn_name].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+
+    var towers = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_TOWER);
+    for (var i in towers){
+        var closestHostile = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if(closestHostile) {
-            tower.attack(closestHostile);
+            towers[i].attack(closestHostile);
         }
+        //console.log(towers[i]);
     }
     
     
