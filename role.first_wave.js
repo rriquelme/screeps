@@ -52,10 +52,19 @@ var firstWave = {
             if (! creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE)){
                 //creep.say("here");
                 // If no one active
-                var l_target = creep.room.find(FIND_SOURCES);
-                l_target.sort((a,b) => b.ticksToRegeneration - a.ticksToRegeneration);
-                console_log(l_target[0])
-                //creep.memory.state = "full";
+                if (creep.store[RESOURCE_ENERGY] != 0){
+                    creep.memory.state = "full";
+
+                }
+                else {
+                    var l_target = creep.room.find(FIND_SOURCES);
+                    l_target.sort((a,b) => a.ticksToRegeneration - b.ticksToRegeneration);
+                    console.log(l_target[0])
+                    creep.memory.source = l_target[0].id;
+                    creep.moveTo(Game.getObjectById(creep.memory.source), {visualizePathStyle: {stroke: '#ffffff'}});
+
+                }
+                
             } else if (on_floor && on_floor.amount >100 ){
                 //creep.say("here2");
                 if(creep.pickup(on_floor) == ERR_NOT_IN_RANGE) {
