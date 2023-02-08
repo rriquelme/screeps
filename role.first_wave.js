@@ -47,10 +47,10 @@ var firstWave = {
             var nearest_path = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
             var closest = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
             //console.log(creep.room.find(FIND_SOURCES));
-            //creep.say("H");
+            
 
             if (! creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE)){
-                //creep.say("here");
+                
                 // If no one active
                 if (creep.store[RESOURCE_ENERGY] != 0){
                     creep.memory.state = "full";
@@ -59,29 +59,30 @@ var firstWave = {
                 else {
                     var l_target = creep.room.find(FIND_SOURCES);
                     l_target.sort((a,b) => a.ticksToRegeneration - b.ticksToRegeneration);
-                    console.log(l_target[0])
+                    //console.log(l_target[0])
                     creep.memory.source = l_target[0].id;
                     creep.moveTo(Game.getObjectById(creep.memory.source), {visualizePathStyle: {stroke: '#ffffff'}});
 
                 }
                 
             } else if (on_floor && on_floor.amount >100 ){
-                //creep.say("here2");
+                
                 if(creep.pickup(on_floor) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(on_floor);
                 }
             } else if (!creep.memory.source){
                 creep.memory.source = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE).id;
-                //creep.say("hola1");
+                
             } else if (Game.getObjectById(creep.memory.source).energy == 0){
                 creep.memory.source = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE).id;
-                //creep.say("hola2");
+                
             } else if (nearest_path && nearest_path.id != creep.memory.source) {
                 creep.memory.source = nearest_path.id;
             
             }
-            //creep.say("hola3");
-            if(creep.harvest(Game.getObjectById(creep.memory.source)) == ERR_NOT_IN_RANGE) {
+            
+            var harv = creep.harvest(Game.getObjectById(creep.memory.source));
+            if(harv != OK) {
                 creep.moveTo(Game.getObjectById(creep.memory.source), {visualizePathStyle: {stroke: '#ffffff'}});
             }
             if (creep.store.getFreeCapacity() == 0){
