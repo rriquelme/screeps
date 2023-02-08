@@ -12,18 +12,29 @@ var firstWave = {
                 creep.memory.state = "mining"
             }
 
+        }else if (creep.memory.state == "repairing"){
+            var r = Game.getObjectById(creep.memory.to_repair);
+            bf.go_to_repair(creep,r);
+            if (creep.store[RESOURCE_ENERGY] == 0){
+                creep.memory.state = "mining";
+            } else if (r.hits == r.hitsMax){
+                creep.memory.state = "full";
+            }
+        
         }else if (creep.store.getFreeCapacity() == 0 || creep.memory.state == "full"){
             creep.memory.state = "full";
             // Go to do other things
             var to_supply = creep.pos.findClosestByPath(FIND_STRUCTURES, {filter: (structure) => {return (structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_TOWER) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;}});
             var to_build = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
-            var to_repair = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: object => object.hits< object.hitsMax*0.95 && object.structureType!=STRUCTURE_WALL});
+            var to_repair = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: object => object.hits< object.hitsMax*0.90 && object.structureType!=STRUCTURE_WALL});
             if (to_supply){
                 bf.go_to_supply(creep,to_supply);
             }else if (_.filter(Game.creeps, (creep) => creep.memory.state == "upgrading").length <1){
                 creep.memory.state = "upgrading";
             
-            }else  if (to_repair){
+            }else  if (to_repair && _.filter(Game.creeps, (creep) => creep.memory.state == "repairing").length < 2){
+                creep.memory.to_repair = to_repair.id;
+                creep.memory.state = "repairing";
                 bf.go_to_repair(creep,to_repair);
             }else if(to_build){
                 if(creep.build(to_build) == ERR_NOT_IN_RANGE) {
