@@ -54,7 +54,7 @@ var firstWave = {
             // code optimized for 2 sources.
             creep.memory.state = "mining";
             //creep.say(creep.memory.source);
-            var on_floor = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+            var on_floor = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
             var nearest_path = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
             var closest = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
             //console.log(creep.room.find(FIND_SOURCES));
@@ -77,16 +77,24 @@ var firstWave = {
                 }
                 
             } else if (on_floor && on_floor.amount >100 ){
-                
-                if(creep.pickup(on_floor) == ERR_NOT_IN_RANGE) {
+                var pu = creep.pickup(on_floor);
+                if(pu != OK) {
+                    //creep.say("on floor");
                     creep.moveTo(on_floor);
+                } else{
+                    // Improve
+                    creep.memory.state = "full";
                 }
             } else if (!creep.memory.source){
                 creep.memory.source = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE).id;
                 
             } else if (Game.getObjectById(creep.memory.source).energy == 0){
                 creep.memory.source = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE).id;
-                
+                //creep.say("full");
+                if(creep.store[RESOURCE_ENERGY]  > creep.store.getCapacity()/2){
+                    creep.memory.state = "full";
+                }
+            
             } else if (nearest_path && nearest_path.id != creep.memory.source) {
                 creep.memory.source = nearest_path.id;
             
@@ -94,11 +102,13 @@ var firstWave = {
             
             var harv = creep.harvest(Game.getObjectById(creep.memory.source));
             if(harv != OK) {
+                //creep.say("move");
                 creep.moveTo(Game.getObjectById(creep.memory.source), {visualizePathStyle: {stroke: '#ffffff'}});
             }
             if (creep.store.getFreeCapacity() == 0){
                 creep.memory.state = "full";
             }
+            //creep.say(creep.store[RESOURCE_ENERGY]);
         }
         
         

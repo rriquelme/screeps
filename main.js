@@ -39,7 +39,7 @@ module.exports.loop = function () {
             Game.spawns[spawn_name].spawnCreep(wave_creep_2, "wave_2_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
             Game.spawns[spawn_name].spawnCreep(wave_creep_1, "wave_1_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
         }
-    } else if (current_lvl >= 5 && _count_creeps < 7){
+    } else if (current_lvl >= 5 && _count_creeps < 8){
         console.log("need fifth wave");
         Game.spawns[spawn_name].spawnCreep(wave_creep_5, "wave_5_"+Game.time.toString().slice(-2), {memory: {role: "wave_1", perma_role: "none"}});
         if (_count_creeps < 5 && _count_creeps >= 3){
