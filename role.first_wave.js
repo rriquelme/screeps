@@ -79,7 +79,7 @@ var firstWave = {
             } else if (on_floor && on_floor.amount >100 ){
                 var pu = creep.pickup(on_floor);
                 if(pu != OK) {
-                    //creep.say("on floor");
+                    
                     creep.moveTo(on_floor);
                 } else{
                     // Improve
@@ -90,7 +90,7 @@ var firstWave = {
                 
             } else if (Game.getObjectById(creep.memory.source).energy == 0){
                 creep.memory.source = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE).id;
-                //creep.say("full");
+                
                 if(creep.store[RESOURCE_ENERGY]  > creep.store.getCapacity()/2){
                     creep.memory.state = "full";
                 }
@@ -102,13 +102,13 @@ var firstWave = {
             
             var harv = creep.harvest(Game.getObjectById(creep.memory.source));
             if(harv != OK) {
-                //creep.say("move");
+                
                 creep.moveTo(Game.getObjectById(creep.memory.source), {visualizePathStyle: {stroke: '#ffffff'}});
             }
             if (creep.store.getFreeCapacity() == 0){
                 creep.memory.state = "full";
             }
-            //creep.say(creep.store[RESOURCE_ENERGY]);
+            
         }
         
         
