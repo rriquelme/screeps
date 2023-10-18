@@ -3,12 +3,7 @@ module.exports.loop = function () {
     // define basic roles: builder, upgrader, minerharvester, repairer
     var main_spawn = Object.keys(Game.spawns)[0];
     // Get an array of all of your creeps
-    var creepList = Object.keys(Game.creeps);
-
-    // If there are no creeps, create one with the role of "basicWorker"
-    if (creepList.length < 1) {
-        Game.spawns[main_spawn].spawnCreep([WORK, CARRY, MOVE, MOVE], 'BasicWorker', { memory: { role: undefined } });
-    }
+    var creepList = Object.keys(Game.creeps);    
 
     // Keep track of the number of creeps assigned to each source
     var sourceCreepCount = {};
@@ -63,9 +58,7 @@ module.exports.loop = function () {
             sourceCreepCount[sources[i].id] = 0;
         }
     }
-    //console.log();
 
-    // Loop through each creep
 
     // Spawn a new creep with the role of "basicWorker" and assign it to the source with the least number of assigned creeps
     var sources = Object.keys(sourceCreepCount);
@@ -75,34 +68,17 @@ module.exports.loop = function () {
     for (var i = 1; i < sources.length; i++) {
         if (sourceCreepCount[sources[i]] <= sourceCreepCount[minSource]) {
             minSource = sources[i];
+
         }
     }
-    if (creepList.length < 12) {
+    if (creepList.length < 12 && creepList.length > 0) {
         var creepName = 'BW' + Math.floor(Math.random() * 100);
         Game.spawns[main_spawn].spawnCreep([WORK, CARRY, MOVE, MOVE], creepName, { memory: { role: undefined, source: minSource , bored: 0} });
         //console.log(Object.keys(Game.spawns)[0]);
         console.log('Spawning new creep: ' + creepName + ' with role: basicWorker' + ' and source: ' + minSource);
     }
-    var source = creep.pos.findClosestByRange(FIND_SOURCES);
-var range = 1; // replace with the range you want to check
-/*
-var freeSpaces = 0;
-var terrain = creep.room.getTerrain();
-for (var x = source.pos.x - range; x <= source.pos.x + range; x++) {
-  for (var y = source.pos.y - range; y <= source.pos.y + range; y++) {
-    if (terrain.get(x, y) !== TERRAIN_MASK_WALL && terrain.get(x, y) !== TERRAIN_MASK_SWAMP) {
-      var structures = creep.room.lookForAt(LOOK_STRUCTURES, x, y);
-      var hasObstacle = structures.some(function(structure) {
-        return structure.structureType !== STRUCTURE_ROAD && structure.structureType !== STRUCTURE_CONTAINER && structure.structureType !== STRUCTURE_RAMPART;
-      });
-      if (!hasObstacle) {
-        freeSpaces++;
-      }
+    // If there are no creeps, create one with the role of "basicWorker"
+    else if (creepList.length < 1) {
+        Game.spawns[main_spawn].spawnCreep([WORK, CARRY, MOVE, MOVE], 'BasicWorker', { memory: { role: undefined } });
     }
-  }
-}
-
-console.log("There are " + freeSpaces + " free spaces around the source at (" + source.pos.x + "," + source.pos.y + ") that are suitable for placing structures.");
-*/
-
 }
