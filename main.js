@@ -2,83 +2,110 @@ var assigner = require('assigner');
 module.exports.loop = function () {
     // define basic roles: builder, upgrader, minerharvester, repairer
     var main_spawn = Object.keys(Game.spawns)[0];
-    // Get an array of all of your creeps
-    var creepList = Object.keys(Game.creeps);    
-
-    // Keep track of the number of creeps assigned to each source
-    var sourceCreepCount = {};
+    var sources = Game.spawns[main_spawn].room.find(FIND_SOURCES);
+    var creepList = Object.keys(Game.creeps);
+    var creepList_length = creepList.length;    
+    var construction = Object.keys(Game.constructionSites);
+    var construction_length = construction.length;
     var n_upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader').length;
-    //var 
-    var construction = Object.keys(Game.constructionSites).length;
+    var extension_free = Game.spawns[main_spawn].room.find(FIND_STRUCTURES, {
+        filter: (structure) => {
+            return (structure.structureType == STRUCTURE_EXTENSION) &&
+                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+        }
+    });
+    var extension_free_length = extension_free.length;
     // MAIN FOR LOOP
-    for (var i = 0; i < creepList.length; i++) {
-
+    
+    for (var i = 0; i < creepList_length; i++) {
+        
         var creep = Game.creeps[creepList[i]];
         
         // sanity memory TODO later
-        if(creep.memory.bored == undefined) {
-            creep.memory.bored = 0;
-        }
+        //if(creep.memory.bored == undefined) {
+            //    creep.memory.bored = 0;
+        //}
+        
         // if bored > 10, change the source to the other one
+        // should be moved to the miner role...
         if(creep.memory.bored >= 7) {
-            var sources = Game.spawns[main_spawn].room.find(FIND_SOURCES);
             for(var j = 0; j < sources.length; j++) {
                 if(sources[j].id != creep.memory.source) {
                     creep.memory.source = sources[j].id;
-                    console.log(sources[j].id);
                     creep.memory.bored = 0;
                     break;
                 }
             }
         }
-
+        
         if (creep.memory.role == undefined && creep.store.getFreeCapacity() > creep.store[RESOURCE_ENERGY]) {
             creep.memory.role = 'minerharvester';
         }
-        //else if (creep.memory.role == undefined &&)
-        else if (creep.memory.role == undefined && n_upgraders < 4) {
+        else if (creep.memory.role == undefined && extension_free_length > 0) {
+            creep.memory.role = 'extensionfiller';
+        }
+        else if (creep.memory.role == undefined && n_upgraders < 2) {
             creep.memory.role = 'upgrader';
-            //console.log("upp");
             n_upgraders += 1;
         }
-        else if (creep.memory.role == undefined && construction > 0) {
+        else if (creep.memory.role == undefined && construction_length > 0) {
             creep.memory.role = 'builder';
+            //creep.say('B');
+            if (creep.memory.building == undefined) {
+                creep.memory.building = construction[0].id;
+            }
         }
         else if (creep.memory.role == undefined){
             creep.memory.role = 'upgrader';
         }
-
+        
         assigner.run(creep);
+        //creep.say(creep.);
+        // creep say time to live:
+        creep.say(creep.ticksToLive);
     }
-    //console.log(n_upgraders);
-    // for each source not listed in sourceCreepCount, set the value to 0
-    var sources = Game.spawns[main_spawn].room.find(FIND_SOURCES);
-    for (var i = 0; i < sources.length; i++) {
-        if (!sourceCreepCount[sources[i].id]) {
-            sourceCreepCount[sources[i].id] = 0;
+
+
+    // create creeps with move work move carry body rotating the body parts
+    var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
+    var _body = [MOVE, WORK, MOVE, CARRY, MOVE, WORK];
+    var body = [];
+    var total =0;
+    var work_part =0;
+    var carry_part =0;
+    while(total <= maxEnergy){
+        for (var i = 0; i < _body.length; i++){
+            if (total <= maxEnergy){
+                total += BODYPART_COST[_body[i]];
+                body.push(_body[i]);
+            }
         }
     }
+    body.pop();
+    //console.log(total);
+    //body.pop();
+    //console.log(body);
 
-
-    // Spawn a new creep with the role of "basicWorker" and assign it to the source with the least number of assigned creeps
-    var sources = Object.keys(sourceCreepCount);
-    var minSource = sources[0];
-    //console.log(sources);
-
-    for (var i = 1; i < sources.length; i++) {
-        if (sourceCreepCount[sources[i]] <= sourceCreepCount[minSource]) {
-            minSource = sources[i];
-
-        }
-    }
-    if (creepList.length < 12 && creepList.length > 0) {
+    if (creepList_length < 10 && creepList_length > 0) {
         var creepName = 'BW' + Math.floor(Math.random() * 100);
-        Game.spawns[main_spawn].spawnCreep([WORK, CARRY, MOVE, MOVE], creepName, { memory: { role: undefined, source: minSource , bored: 0} });
-        //console.log(Object.keys(Game.spawns)[0]);
-        console.log('Spawning new creep: ' + creepName + ' with role: basicWorker' + ' and source: ' + minSource);
+        Game.spawns[main_spawn].spawnCreep(body, creepName, { memory: { role: undefined, source: sources[0].id , bored: 0} });
+        console.log('Spawning new creep: ' + creepName + ' with body: ' + body + ' and source: ' + sources[0].id);
     }
-    // If there are no creeps, create one with the role of "basicWorker"
-    else if (creepList.length < 1) {
-        Game.spawns[main_spawn].spawnCreep([WORK, CARRY, MOVE, MOVE], 'BasicWorker', { memory: { role: undefined } });
+    else if (creepList_length < 1) {
+        Game.spawns[main_spawn].spawnCreep([MOVE, WORK, MOVE, CARRY], 'BasicWorker', { memory: { role: undefined , source: sources[0].id, bored: 0} });
     }
+    //sum the maximun energy that could be available (spawn + extensions)
+
+    // Utilities:
+    // calculate the cost of a creep
+    //var body = [MOVE, WORK, CARRY];
+    //var cost = 0;
+    //for (var i = 0; i < body.length; i++) {
+    //cost += BODYPART_COST[body[i]];
+    //}
+    //console.log(cost); // output: 200
+    
+    // 
+    //console.log(body);
+    //console.log(maxEnergy);
 }
