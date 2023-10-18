@@ -41,7 +41,7 @@ module.exports.loop = function () {
         if (creep.memory.role == undefined && creep.store.getFreeCapacity() > creep.store[RESOURCE_ENERGY]) {
             creep.memory.role = 'minerharvester';
         }
-        else if (creep.memory.role == undefined && extension_free_length > 0) {
+        else if (creep.memory.role == undefined && extension_free_length > 0 ) {
             creep.memory.role = 'extensionfiller';
         }
         else if (creep.memory.role == undefined && n_upgraders < 2) {
@@ -62,34 +62,35 @@ module.exports.loop = function () {
         assigner.run(creep);
         //creep.say(creep.);
         // creep say time to live:
-        creep.say(creep.ticksToLive);
+        //creep.say(creep.ticksToLive);
     }
 
 
-    // create creeps with move work move carry body rotating the body parts
-    var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
-    var _body = [MOVE, WORK, MOVE, CARRY, MOVE, WORK];
-    var body = [];
-    var total =0;
-    var work_part =0;
-    var carry_part =0;
-    while(total <= maxEnergy){
-        for (var i = 0; i < _body.length; i++){
-            if (total <= maxEnergy){
-                total += BODYPART_COST[_body[i]];
-                body.push(_body[i]);
+    
+    if (creepList_length < 10 && creepList_length > 0) {
+        // create creeps with move work move carry body rotating the body parts
+        var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
+        var _body = [MOVE, WORK, MOVE, CARRY, MOVE, WORK];
+        var body = [];
+        var total =0;
+        var work_part =0;
+        var carry_part =0;
+        while(total <= maxEnergy){
+            for (var i = 0; i < _body.length; i++){
+                if (total <= maxEnergy){
+                    total += BODYPART_COST[_body[i]];
+                    body.push(_body[i]);
+                }
             }
         }
-    }
-    body.pop();
-    //console.log(total);
-    //body.pop();
-    //console.log(body);
+        body.pop();
+        //console.log(total);
+        //body.pop();
+        //console.log(body);
 
-    if (creepList_length < 10 && creepList_length > 0) {
-        var creepName = 'BW' + Math.floor(Math.random() * 100);
+        var creepName = 'R' + Math.floor(Math.random() * 10) + 'D' + Math.floor(Math.random() * 10);
         Game.spawns[main_spawn].spawnCreep(body, creepName, { memory: { role: undefined, source: sources[0].id , bored: 0} });
-        console.log('Spawning new creep: ' + creepName + ' with body: ' + body + ' and source: ' + sources[0].id);
+        console.log('Spawning: ' + creepName + ' | body: ' + body + ' | source: ' + sources[0].id);
     }
     else if (creepList_length < 1) {
         Game.spawns[main_spawn].spawnCreep([MOVE, WORK, MOVE, CARRY], 'BasicWorker', { memory: { role: undefined , source: sources[0].id, bored: 0} });
