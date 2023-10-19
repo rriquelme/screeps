@@ -8,6 +8,8 @@ module.exports.loop = function () {
     var construction = Object.keys(Game.constructionSites);
     var construction_length = construction.length;
     var n_upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader').length;
+    var n_attackers = _.filter(Game.creeps, (creep) => creep.memory.role == 'attacker').length;
+    var n_range_attackers = _.filter(Game.creeps, (creep) => creep.memory.role == 'r_attacker').length;
     var extension_free = Game.spawns[main_spawn].room.find(FIND_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType == STRUCTURE_EXTENSION) &&
@@ -67,7 +69,7 @@ module.exports.loop = function () {
 
 
     
-    if (creepList_length < 10 && creepList_length > 0) {
+    if ((creepList_length-n_attackers-n_range_attackers) < 10 && creepList_length > 0) {
         // create creeps with move work move carry body rotating the body parts
         var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
         var _body = [MOVE, WORK, MOVE, CARRY, MOVE, WORK];
@@ -84,6 +86,7 @@ module.exports.loop = function () {
             }
         }
         body.pop();
+        body.reverse();
         //console.log(total);
         //body.pop();
         //console.log(body);
@@ -92,8 +95,47 @@ module.exports.loop = function () {
         Game.spawns[main_spawn].spawnCreep(body, creepName, { memory: { role: undefined, source: sources[0].id , bored: 0} });
         console.log('Spawning: ' + creepName + ' | body: ' + body + ' | source: ' + sources[0].id);
     }
-    else if (creepList_length < 1) {
+    else if ((creepList_length-n_attackers-n_range_attackers)  < 1) {
         Game.spawns[main_spawn].spawnCreep([MOVE, WORK, MOVE, CARRY], 'BasicWorker', { memory: { role: undefined , source: sources[0].id, bored: 0} });
+    }
+    else if (n_attackers <2){
+        var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
+        var _body = [MOVE, ATTACK];
+        var body = [];
+        var total =0;
+        var work_part =0;
+        var carry_part =0;
+        while(total <= maxEnergy){
+            for (var i = 0; i < _body.length; i++){
+                if (total <= maxEnergy){
+                    total += BODYPART_COST[_body[i]];
+                    body.push(_body[i]);
+                }
+            }
+        }
+        body.pop();
+        body.reverse();
+        Game.spawns[main_spawn].spawnCreep(body, 'M_Attacker' + Math.floor(Math.random() * 10), { memory: { role: 'attacker' , source: sources[0].id, bored: 0} });
+        console.log("Spawning attacker body:", body);
+    }else if (n_range_attackers <2){
+        var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
+        var _body = [MOVE, RANGED_ATTACK];
+        var body = [];
+        var total =0;
+        var work_part =0;
+        var carry_part =0;
+        while(total <= maxEnergy){
+            for (var i = 0; i < _body.length; i++){
+                if (total <= maxEnergy){
+                    total += BODYPART_COST[_body[i]];
+                    body.push(_body[i]);
+                }
+            }
+        }
+        body.pop();
+        body.reverse();
+        Game.spawns[main_spawn].spawnCreep(body, 'R_Attacker'+ Math.floor(Math.random() * 10), { memory: { role: 'r_attacker' , source: sources[0].id, bored: 0} });
+        console.log("Spawning r_attacker body:",body);
     }
     //sum the maximun energy that could be available (spawn + extensions)
 

@@ -12,8 +12,10 @@ module.exports = {
                 }
             });
             if (extensions.length > 0) {
-                if (creep.transfer(extensions[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(extensions[0]);
+                // find nearest extension without fill in it
+                var ext = creep.pos.findClosestByRange(extensions);
+                if (creep.transfer(ext, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(ext);
                 }
             }
             else {
