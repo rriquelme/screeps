@@ -40,12 +40,26 @@ module.exports.loop = function () {
             }
         }
         
-        if (creep.memory.role == undefined && creep.store.getFreeCapacity() > creep.store[RESOURCE_ENERGY]) {
-            creep.memory.role = 'minerharvester';
-        }
-        else if (creep.memory.role == undefined && extension_free_length > 0 ) {
-            creep.memory.role = 'extensionfiller';
-        }
+         if (creep.store[RESOURCE_ENERGY] == 0 && creep.memory.role == undefined) {
+             creep.memory.role = "miner";
+         }
+         else if (creep.memory.role == undefined && creep.store.getFreeCapacity() > creep.store[RESOURCE_ENERGY]) {
+             creep.memory.role = "miner";
+         }
+         else if (creep.memory.role == undefined && extension_free_length > 0 ) {
+             creep.memory.role = 'extensionfiller';
+             creep.say("EF");
+         }
+         else if (creep.memory.role == undefined && Game.spawns[main_spawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+             creep.memory.role = 'spawnfiller';
+             creep.say("SF");
+         }
+        //if (creep.memory.role == undefined && creep.store.getFreeCapacity() > creep.store[RESOURCE_ENERGY]) {
+        //    creep.memory.role = 'minerharvester';
+        //}
+        //else if (creep.memory.role == undefined && extension_free_length > 0 ) {
+        //    creep.memory.role = 'extensionfiller';
+        //}
         else if (creep.memory.role == undefined && n_upgraders < 2) {
             creep.memory.role = 'upgrader';
             n_upgraders += 1;
@@ -75,8 +89,6 @@ module.exports.loop = function () {
         var _body = [MOVE, WORK, MOVE, CARRY, MOVE, WORK];
         var body = [];
         var total =0;
-        var work_part =0;
-        var carry_part =0;
         while(total <= maxEnergy){
             for (var i = 0; i < _body.length; i++){
                 if (total <= maxEnergy){
@@ -86,6 +98,9 @@ module.exports.loop = function () {
             }
         }
         body.pop();
+        if (body[body.length-1] == MOVE){
+            body.pop();
+        }
         body.reverse();
         //console.log(total);
         //body.pop();
@@ -98,13 +113,11 @@ module.exports.loop = function () {
     else if ((creepList_length-n_attackers-n_range_attackers)  < 1) {
         Game.spawns[main_spawn].spawnCreep([MOVE, WORK, MOVE, CARRY], 'BasicWorker', { memory: { role: undefined , source: sources[0].id, bored: 0} });
     }
-    else if (n_attackers <2){
+    else if (n_attackers < Game.spawns[main_spawn].room.controller.level -1){
         var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
         var _body = [MOVE, ATTACK];
         var body = [];
         var total =0;
-        var work_part =0;
-        var carry_part =0;
         while(total <= maxEnergy){
             for (var i = 0; i < _body.length; i++){
                 if (total <= maxEnergy){
@@ -117,13 +130,11 @@ module.exports.loop = function () {
         body.reverse();
         Game.spawns[main_spawn].spawnCreep(body, 'M_Attacker' + Math.floor(Math.random() * 10), { memory: { role: 'attacker' , source: sources[0].id, bored: 0} });
         console.log("Spawning attacker body:", body);
-    }else if (n_range_attackers <2){
+    }else if (n_range_attackers <Game.spawns[main_spawn].room.controller.level -1){
         var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
         var _body = [MOVE, RANGED_ATTACK];
         var body = [];
         var total =0;
-        var work_part =0;
-        var carry_part =0;
         while(total <= maxEnergy){
             for (var i = 0; i < _body.length; i++){
                 if (total <= maxEnergy){
