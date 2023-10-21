@@ -22,6 +22,7 @@ module.exports = {
 
 
         if (target_healer.length > 0) {
+            creep.memory.bored = 0;
             //console.log("th");
             target = creep.pos.findClosestByRange(target_healer);
             if (creep.attack(target) == ERR_NOT_IN_RANGE) {
@@ -29,6 +30,7 @@ module.exports = {
             }
         }
         else if (target.length > 0) {
+            creep.memory.bored = 0;
             // Attack the target
             creep.say("target");
             //console.log("target");
@@ -38,18 +40,28 @@ module.exports = {
                 if (creep.rangedAttack(target) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {visualizePathStyle: {stroke: '#ff0000'}});
                 }
+                else{
+                    creep.memory.bored = 0;
+                }
             }
             else {
                 if (creep.attack(target) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {visualizePathStyle: {stroke: '#ff0000'}});
+                }
+                else{
+                    creep.memory.bored = 0;
                 }
             }
         }
         else{
             //console.log("else");
             // If there are no enemies, move to the flag
-            var flag = Game.flags['Attackers'];
-            creep.moveTo(flag, {visualizePathStyle: {stroke: '#ff0000'}});
+            creep.memory.bored +=1;
+            if (creep.memory.bored == 5){
+                var flag = Game.flags['Attackers'];
+                creep.moveTo(flag, {visualizePathStyle: {stroke: '#ff0000'}});
+            }
+            
         }
     }
 };

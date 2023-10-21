@@ -17,6 +17,15 @@ module.exports.loop = function () {
         }
     });
     var extension_free_length = extension_free.length;
+    //console.log(extension_free_length);
+    var structures_to_repair = Game.spawns[main_spawn].room.find(FIND_STRUCTURES, {
+        filter: (structure) => {
+            return (structure.structureType != STRUCTURE_WALL && structure.hits < structure.hitsMax);
+        }
+    });
+    var structures_to_repair_length = structures_to_repair.length;
+    //console.log(structures_to_repair_length);
+
     // MAIN FOR LOOP
     
     for (var i = 0; i < creepList_length; i++) {
@@ -30,7 +39,7 @@ module.exports.loop = function () {
         
         // if bored > 10, change the source to the other one
         // should be moved to the miner role...
-        if(creep.memory.bored >= 7) {
+        if(creep.memory.bored >= 10) {
             for(var j = 0; j < sources.length; j++) {
                 if(sources[j].id != creep.memory.source) {
                     creep.memory.source = sources[j].id;
@@ -39,27 +48,34 @@ module.exports.loop = function () {
                 }
             }
         }
-        
-         if (creep.store[RESOURCE_ENERGY] == 0 && creep.memory.role == undefined) {
+        console.log(n_upgraders);
+        if (creep.tickToLive < 50 && creep.store[RESOURCE_ENERGY] == 0) {
+            creep.suicide();
+        }
+        else if (creep.store[RESOURCE_ENERGY] == 0 && creep.memory.role == undefined) {
              creep.memory.role = "miner";
          }
          else if (creep.memory.role == undefined && creep.store.getFreeCapacity() > creep.store[RESOURCE_ENERGY]) {
              creep.memory.role = "miner";
          }
+         else if (creep.memory.role == undefined && n_upgraders < 1 && (creepList_length-n_attackers-n_range_attackers)  > 2 ){
+            creep.memory.role = 'upgrader';
+            //creep.say("U_unique");
+            n_upgraders +=1;
+         }
          else if (creep.memory.role == undefined && extension_free_length > 0 ) {
              creep.memory.role = 'extensionfiller';
+             extension_free_length -= 1;
              creep.say("EF");
          }
          else if (creep.memory.role == undefined && Game.spawns[main_spawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
              creep.memory.role = 'spawnfiller';
              creep.say("SF");
          }
-        //if (creep.memory.role == undefined && creep.store.getFreeCapacity() > creep.store[RESOURCE_ENERGY]) {
-        //    creep.memory.role = 'minerharvester';
-        //}
-        //else if (creep.memory.role == undefined && extension_free_length > 0 ) {
-        //    creep.memory.role = 'extensionfiller';
-        //}
+        else if (structures_to_repair_length > 0) {
+            creep.memory.role = 'repairer';
+            structures_to_repair_length -=1
+        }
         else if (creep.memory.role == undefined && n_upgraders < 2) {
             creep.memory.role = 'upgrader';
             n_upgraders += 1;
@@ -113,7 +129,7 @@ module.exports.loop = function () {
     else if ((creepList_length-n_attackers-n_range_attackers)  < 1) {
         Game.spawns[main_spawn].spawnCreep([MOVE, WORK, MOVE, CARRY], 'BasicWorker', { memory: { role: undefined , source: sources[0].id, bored: 0} });
     }
-    else if (n_attackers < Game.spawns[main_spawn].room.controller.level -1){
+    else if (n_attackers < (Game.spawns[main_spawn].room.controller.level -1)){
         var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
         var _body = [MOVE, ATTACK];
         var body = [];
@@ -130,7 +146,7 @@ module.exports.loop = function () {
         body.reverse();
         Game.spawns[main_spawn].spawnCreep(body, 'M_Attacker' + Math.floor(Math.random() * 10), { memory: { role: 'attacker' , source: sources[0].id, bored: 0} });
         console.log("Spawning attacker body:", body);
-    }else if (n_range_attackers <Game.spawns[main_spawn].room.controller.level -1){
+    }else if (n_range_attackers < (Game.spawns[main_spawn].room.controller.level -1)){
         var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
         var _body = [MOVE, RANGED_ATTACK];
         var body = [];
