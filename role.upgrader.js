@@ -12,6 +12,11 @@ var roleUpgrader = {
             if(creep.upgradeController(Game.spawns[Object.keys(Game.spawns)[0]].room.controller) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns[Object.keys(Game.spawns)[0]].room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
             }
+            else{
+                if(creep.store[RESOURCE_ENERGY] == 0) {
+                    creep.memory.role = undefined;
+                }
+            }
 
         }
         

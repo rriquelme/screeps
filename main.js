@@ -48,19 +48,21 @@ module.exports.loop = function () {
                 }
             }
         }
-        console.log(n_upgraders);
+        //console.log(n_upgraders);
         if (creep.tickToLive < 50 && creep.store[RESOURCE_ENERGY] == 0) {
             creep.suicide();
         }
         else if (creep.store[RESOURCE_ENERGY] == 0 && creep.memory.role == undefined) {
              creep.memory.role = "miner";
+             creep.say("M");
          }
          else if (creep.memory.role == undefined && creep.store.getFreeCapacity() > creep.store[RESOURCE_ENERGY]) {
              creep.memory.role = "miner";
+             creep.say("M");
          }
          else if (creep.memory.role == undefined && n_upgraders < 1 && (creepList_length-n_attackers-n_range_attackers)  > 2 ){
             creep.memory.role = 'upgrader';
-            //creep.say("U_unique");
+            creep.say("U");
             n_upgraders +=1;
          }
          else if (creep.memory.role == undefined && extension_free_length > 0 ) {
@@ -75,20 +77,23 @@ module.exports.loop = function () {
         else if (structures_to_repair_length > 0) {
             creep.memory.role = 'repairer';
             structures_to_repair_length -=1
+            creep.say("R");
         }
         else if (creep.memory.role == undefined && n_upgraders < 2) {
             creep.memory.role = 'upgrader';
             n_upgraders += 1;
+            creep.say("U");
         }
         else if (creep.memory.role == undefined && construction_length > 0) {
             creep.memory.role = 'builder';
-            //creep.say('B');
+            creep.say('B');
             if (creep.memory.building == undefined) {
                 creep.memory.building = construction[0].id;
             }
         }
         else if (creep.memory.role == undefined){
             creep.memory.role = 'upgrader';
+            creep.say("U");
         }
         
         assigner.run(creep);

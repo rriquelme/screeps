@@ -57,7 +57,8 @@ module.exports = {
             //console.log("else");
             // If there are no enemies, move to the flag
             creep.memory.bored +=1;
-            if (creep.memory.bored == 5){
+            if (creep.memory.bored >= 5){
+                creep.memory.bored = 5;
                 var flag = Game.flags['Attackers'];
                 creep.moveTo(flag, {visualizePathStyle: {stroke: '#ff0000'}});
             }

@@ -21,6 +21,10 @@ var roleMiner = {
                 }
                 else {
                     creep.memory.bored = 0;
+                    if (creep.store.getFreeCapacity() == 0) {
+                        creep.memory.role = undefined;
+                    }
+
                 }
 
             }
