@@ -28,6 +28,16 @@ var roleMiner = {
                 }
 
             }
+            if(creep.memory.bored >= 10) {
+                var sources = Game.spawns[main_spawn].room.find(FIND_SOURCES);
+                for(var j = 0; j < sources.length; j++) {
+                    if(sources[j].id != creep.memory.source) {
+                        creep.memory.source = sources[j].id;
+                        creep.memory.bored = 0;
+                        break;
+                    }
+                }
+            }
         }
         
     

@@ -39,17 +39,18 @@ module.exports.loop = function () {
         
         // if bored > 10, change the source to the other one
         // should be moved to the miner role...
-        if(creep.memory.bored >= 10) {
-            for(var j = 0; j < sources.length; j++) {
-                if(sources[j].id != creep.memory.source) {
-                    creep.memory.source = sources[j].id;
-                    creep.memory.bored = 0;
-                    break;
-                }
-            }
-        }
+        //if(creep.memory.bored >= 10) {
+        //    for(var j = 0; j < sources.length; j++) {
+        //        if(sources[j].id != creep.memory.source) {
+        //            creep.memory.source = sources[j].id;
+        //            creep.memory.bored = 0;
+        //            break;
+        //        }
+        //    }
+        //}
         //console.log(n_upgraders);
-        if (creep.tickToLive < 50 && creep.store[RESOURCE_ENERGY] == 0) {
+        //creep.say(creep.ticksToLive);
+        if (creep.ticksToLive < 50 && creep.store[RESOURCE_ENERGY] == 0) {
             creep.suicide();
         }
         else if (creep.store[RESOURCE_ENERGY] == 0 && creep.memory.role == undefined) {
@@ -74,7 +75,7 @@ module.exports.loop = function () {
              creep.memory.role = 'spawnfiller';
              creep.say("SF");
          }
-        else if (structures_to_repair_length > 0) {
+        else if (creep.memory.role == undefined  && structures_to_repair_length > 0) {
             creep.memory.role = 'repairer';
             structures_to_repair_length -=1
             creep.say("R");
