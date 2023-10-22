@@ -11,7 +11,10 @@ var roleMiner = {
             var source = Game.getObjectById(creep.memory.source);
             if(source.energy == 0) {
                 creep.memory.role = undefined;
-                creep.memory.bored = 100;
+                //creep.memory.bored += 1;
+                if (creep.moveTo(source) == -2){
+                    creep.memory.bored += 1;
+                }
             }
             else{
                 if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
