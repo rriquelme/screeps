@@ -10,13 +10,16 @@ module.exports.loop = function () {
     var n_upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader').length;
     var n_attackers = _.filter(Game.creeps, (creep) => creep.memory.role == 'attacker').length;
     var n_range_attackers = _.filter(Game.creeps, (creep) => creep.memory.role == 'r_attacker').length;
+    var n_tower_fill = _.filter(Game.creeps, (creep) => creep.memory.role == 'towerfiller').length;
+    var n_ext_fill = _.filter(Game.creeps, (creep) => creep.memory.role == 'extensionfiller').length;
     var extension_free = Game.spawns[main_spawn].room.find(FIND_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType == STRUCTURE_EXTENSION) &&
                 structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
         }
     });
-    var extension_free_length = extension_free.length;
+    var extension_free_length = extension_free.length - n_ext_fill;
+    var tower_needs_refill_lenght = -n_tower_fill;
     //console.log(extension_free_length);
     var structures_to_repair = Game.spawns[main_spawn].room.find(FIND_STRUCTURES, {
         filter: (structure) => {
@@ -26,8 +29,42 @@ module.exports.loop = function () {
     var structures_to_repair_length = structures_to_repair.length;
     //console.log(structures_to_repair_length);
 
+    if (Game.spawns[main_spawn].hits < Game.spawns[main_spawn].hitsMax) {
+        Game.spawns[main_spawn].room.controller.activateSafeMode();
+    }
+    // create a small code for managing towers
+    var towers = Game.spawns[main_spawn].room.find(FIND_STRUCTURES, {
+        filter: (structure) => {
+            return (structure.structureType == STRUCTURE_TOWER);
+        }
+    });
+    //console.log(towers);
+    for (var i = 0; i < towers.length; i++) {
+        if (towers[i].hits < towers[i].hitsMax) {
+            Game.spawns[main_spawn].room.controller.activateSafeMode();
+        }
+        var closestDamagedStructure = towers[i].pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (structure) => structure.hits < structure.hitsMax
+        });
+        if (closestDamagedStructure) {
+            towers[i].repair(closestDamagedStructure);
+        }
+        var closestHostile = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        if (closestHostile) {
+            towers[i].attack(closestHostile);
+        }
+        var closestDamagedCreep = towers[i].pos.findClosestByRange(FIND_MY_CREEPS, {
+            filter: (creep) => creep.hits < creep.hitsMax
+        });
+        if (closestDamagedCreep) {
+            towers[i].heal(closestDamagedCreep);
+        }
+        // if tower has no energy, withdraw energy from storage
+        if (towers[i].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+            tower_needs_refill_lenght +=1;
+        } 
+    }
     // MAIN FOR LOOP
-    
     for (var i = 0; i < creepList_length; i++) {
         
         var creep = Game.creeps[creepList[i]];
@@ -65,6 +102,11 @@ module.exports.loop = function () {
             creep.memory.role = 'upgrader';
             creep.say("U");
             n_upgraders +=1;
+         }
+         else if (creep.memory.role == undefined && tower_needs_refill_lenght >0){
+            creep.memory.role = 'towerfiller';
+            tower_needs_refill_lenght -= 1;
+            //creep.say("TF");
          }
          else if (creep.memory.role == undefined && extension_free_length > 0 ) {
              creep.memory.role = 'extensionfiller';
@@ -135,7 +177,7 @@ module.exports.loop = function () {
     else if ((creepList_length-n_attackers-n_range_attackers)  < 1) {
         Game.spawns[main_spawn].spawnCreep([MOVE, WORK, MOVE, CARRY], 'BasicWorker', { memory: { role: undefined , source: sources[0].id, bored: 0} });
     }
-    else if (n_attackers < (Game.spawns[main_spawn].room.controller.level -1)){
+    else if (n_attackers < (Game.spawns[main_spawn].room.controller.level -1 - towers.length)){
         var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
         var _body = [MOVE, ATTACK];
         var body = [];
@@ -152,7 +194,7 @@ module.exports.loop = function () {
         body.reverse();
         Game.spawns[main_spawn].spawnCreep(body, 'M_Attacker' + Math.floor(Math.random() * 10), { memory: { role: 'attacker' , source: sources[0].id, bored: 0} });
         console.log("Spawning attacker body:", body);
-    }else if (n_range_attackers < (Game.spawns[main_spawn].room.controller.level -1)){
+    }else if (n_range_attackers < (Game.spawns[main_spawn].room.controller.level - 1 - towers.length)){
         var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
         var _body = [MOVE, RANGED_ATTACK];
         var body = [];

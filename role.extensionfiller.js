@@ -18,7 +18,12 @@ module.exports = {
                     creep.moveTo(ext,{visualizePathStyle: {stroke: '#ffffff'}});
                 }
                 else{
-                    creep.memory.role = undefined;
+                    if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+                        creep.memory.role = undefined;
+                    }
+                    if (extensions.length <=1){
+                        creep.memory.role = undefined;
+                    }
                 }
             }
             else {

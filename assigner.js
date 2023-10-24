@@ -6,6 +6,7 @@ var roleAttacker = require('role.attack');
 var roleSpawnFiller = require('role.spawnfiller');
 var roleMiner = require('role.miner');
 var roleRepairer = require('role.repairer');
+var roleTowerFiller = require('role.towerfiller');
 var assigner = {
 
     /** @param {Creep} creep **/
@@ -42,6 +43,9 @@ var assigner = {
         }
         else if (creep.memory.role == 'repairer') {
             roleRepairer.run(creep);
+        }
+        else if (creep.memory.role == 'towerfiller') {
+            roleTowerFiller.run(creep);
         }
         else{
             creep.memory.role = undefined;

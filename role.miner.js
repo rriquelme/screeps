@@ -12,8 +12,13 @@ var roleMiner = {
             if(source.energy == 0) {
                 creep.memory.role = undefined;
                 //creep.memory.bored += 1;
-                if (creep.moveTo(source) == -2){
-                    creep.memory.bored += 1;
+                //creep.say(creep.moveTo(source));
+                var aux = creep.moveTo(source)
+                if ( aux == -2){
+                    creep.memory.bored += 2;
+                }
+                else if (aux == 0){
+                    
                 }
             }
             else{
