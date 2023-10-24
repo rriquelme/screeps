@@ -14,8 +14,11 @@ var roleMiner = {
                 //creep.memory.bored += 1;
                 //creep.say(creep.moveTo(source));
                 var aux = creep.moveTo(source)
+                if (source.ticksToRegeneration >= 50){
+                    creep.memory.bored =10;
+                }
                 if ( aux == -2){
-                    creep.memory.bored += 2;
+                    creep.memory.bored = 10;
                 }
                 else if (aux == 0){
                     
@@ -40,9 +43,18 @@ var roleMiner = {
                 var sources = Game.spawns[main_spawn].room.find(FIND_SOURCES);
                 for(var j = 0; j < sources.length; j++) {
                     if(sources[j].id != creep.memory.source) {
-                        creep.memory.source = sources[j].id;
-                        creep.memory.bored = 0;
-                        break;
+                        if (sources[j].energy == 0 && sources[j].ticksToRegeneration >=50){
+                            creep.memory.bored = 0;
+                            break;
+
+
+                        }
+                        else{
+
+                            creep.memory.source = sources[j].id;
+                            creep.memory.bored = 0;
+                            break;
+                        }
                     }
                 }
             }
