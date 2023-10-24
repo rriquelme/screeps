@@ -98,12 +98,12 @@ module.exports.loop = function () {
              creep.memory.role = "miner";
              creep.say("M");
          }
-         else if (creep.memory.role == undefined && n_upgraders < 1 && (creepList_length-n_attackers-n_range_attackers)  > 2 ){
+         else if (creep.memory.role == undefined && n_upgraders < 1 && (creepList_length-n_attackers-n_range_attackers)  > 3 ){
             creep.memory.role = 'upgrader';
             creep.say("U");
             n_upgraders +=1;
          }
-         else if (creep.memory.role == undefined && tower_needs_refill_lenght >0){
+         else if (creep.memory.role == undefined && tower_needs_refill_lenght >0 && (creepList_length-n_attackers-n_range_attackers)  > 3 ){
             creep.memory.role = 'towerfiller';
             tower_needs_refill_lenght -= 1;
             //creep.say("TF");
