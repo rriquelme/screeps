@@ -27,7 +27,6 @@ module.exports.loop = function () {
         }
     });
     var structures_to_repair_length = structures_to_repair.length;
-    //console.log(structures_to_repair_length);
 
     if (Game.spawns[main_spawn].hits < Game.spawns[main_spawn].hitsMax) {
         Game.spawns[main_spawn].room.controller.activateSafeMode();
@@ -68,25 +67,7 @@ module.exports.loop = function () {
     for (var i = 0; i < creepList_length; i++) {
         
         var creep = Game.creeps[creepList[i]];
-        
-        // sanity memory TODO later
-        //if(creep.memory.bored == undefined) {
-            //    creep.memory.bored = 0;
-        //}
-        
-        // if bored > 10, change the source to the other one
-        // should be moved to the miner role...
-        //if(creep.memory.bored >= 10) {
-        //    for(var j = 0; j < sources.length; j++) {
-        //        if(sources[j].id != creep.memory.source) {
-        //            creep.memory.source = sources[j].id;
-        //            creep.memory.bored = 0;
-        //            break;
-        //        }
-        //    }
-        //}
-        //console.log(n_upgraders);
-        //creep.say(creep.ticksToLive);
+
         if (creep.ticksToLive < 50 && creep.store[RESOURCE_ENERGY] == 0) {
             creep.suicide();
         }
@@ -106,7 +87,7 @@ module.exports.loop = function () {
          else if (creep.memory.role == undefined && tower_needs_refill_lenght >0 && (creepList_length-n_attackers-n_range_attackers)  > 3 ){
             creep.memory.role = 'towerfiller';
             tower_needs_refill_lenght -= 1;
-            //creep.say("TF");
+            creep.say("TF");
          }
          else if (creep.memory.role == undefined && extension_free_length > 0 ) {
              creep.memory.role = 'extensionfiller';
@@ -166,9 +147,6 @@ module.exports.loop = function () {
             body.pop();
         }
         body.reverse();
-        //console.log(total);
-        //body.pop();
-        //console.log(body);
 
         var creepName = 'R' + Math.floor(Math.random() * 10) + 'D' + Math.floor(Math.random() * 10);
         Game.spawns[main_spawn].spawnCreep(body, creepName, { memory: { role: undefined, source: sources[0].id , bored: 0} });
@@ -212,18 +190,4 @@ module.exports.loop = function () {
         Game.spawns[main_spawn].spawnCreep(body, 'R_Attacker'+ Math.floor(Math.random() * 10), { memory: { role: 'r_attacker' , source: sources[0].id, bored: 0} });
         console.log("Spawning r_attacker body:",body);
     }
-    //sum the maximun energy that could be available (spawn + extensions)
-
-    // Utilities:
-    // calculate the cost of a creep
-    //var body = [MOVE, WORK, CARRY];
-    //var cost = 0;
-    //for (var i = 0; i < body.length; i++) {
-    //cost += BODYPART_COST[body[i]];
-    //}
-    //console.log(cost); // output: 200
-    
-    // 
-    //console.log(body);
-    //console.log(maxEnergy);
 }
