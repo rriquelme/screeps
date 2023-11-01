@@ -9,16 +9,27 @@ module.exports.loop = function () {
     var construction_length = construction.length;
     var n_upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader').length;
     var n_attackers = _.filter(Game.creeps, (creep) => creep.memory.role == 'attacker').length;
+    var n_repairers = _.filter(Game.creeps, (creep) => creep.memory.role == 'repairer').length;
     var n_range_attackers = _.filter(Game.creeps, (creep) => creep.memory.role == 'r_attacker').length;
     var n_tower_fill = _.filter(Game.creeps, (creep) => creep.memory.role == 'towerfiller').length;
-    var n_ext_fill = _.filter(Game.creeps, (creep) => creep.memory.role == 'extensionfiller').length;
+    var creeps_fillers = _.filter(Game.creeps, (creep) => creep.memory.role == 'extensionfiller');
+    var n_ext_fill = creeps_fillers.length;
+    var total_resouce_filling = 0;
+    for (var i in creeps_fillers){
+        total_resouce_filling += creeps_fillers[i].store[RESOURCE_ENERGY];
+    }
+    var cap_ext = Math.floor(total_resouce_filling/50);
+
     var extension_free = Game.spawns[main_spawn].room.find(FIND_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType == STRUCTURE_EXTENSION) &&
                 structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
         }
     });
-    var extension_free_length = extension_free.length - n_ext_fill;
+    var extension_free_length = extension_free.length - cap_ext;
+    console.log("extension_free_length: ", extension_free_length);
+
+
     var tower_needs_refill_lenght = -n_tower_fill;
     //console.log(extension_free_length);
     var structures_to_repair = Game.spawns[main_spawn].room.find(FIND_STRUCTURES, {
@@ -26,7 +37,7 @@ module.exports.loop = function () {
             return (structure.structureType != STRUCTURE_WALL && structure.hits < structure.hitsMax);
         }
     });
-    var structures_to_repair_length = structures_to_repair.length;
+    var structures_to_repair_length = structures_to_repair.length - n_repairers;
 
     if (Game.spawns[main_spawn].hits < Game.spawns[main_spawn].hitsMax) {
         Game.spawns[main_spawn].room.controller.activateSafeMode();
@@ -43,7 +54,7 @@ module.exports.loop = function () {
             Game.spawns[main_spawn].room.controller.activateSafeMode();
         }
         var closestDamagedStructure = towers[i].pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (structure) => structure.hits < structure.hitsMax
+            filter: (structure) => 2*structure.hits < structure.hitsMax
         });
         if (closestDamagedStructure) {
             towers[i].repair(closestDamagedStructure);
@@ -75,7 +86,7 @@ module.exports.loop = function () {
              creep.memory.role = "miner";
              creep.say("M");
          }
-         else if (creep.memory.role == undefined && creep.store.getFreeCapacity() > creep.store[RESOURCE_ENERGY]) {
+         else if (creep.memory.role == undefined && 50 > creep.store[RESOURCE_ENERGY]) {
              creep.memory.role = "miner";
              creep.say("M");
          }
@@ -89,9 +100,9 @@ module.exports.loop = function () {
             tower_needs_refill_lenght -= 1;
             creep.say("TF");
          }
-         else if (creep.memory.role == undefined && extension_free_length > 0 ) {
+         else if ((creep.memory.role == undefined || creep.memory.role == 'spawnfiller') && extension_free_length > 0 ) {
              creep.memory.role = 'extensionfiller';
-             extension_free_length -= 1;
+             extension_free_length -= Math.floor(creep.store[RESOURCE_ENERGY]/50);
              creep.say("EF");
          }
          else if (creep.memory.role == undefined && Game.spawns[main_spawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
