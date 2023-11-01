@@ -155,7 +155,7 @@ module.exports.loop = function () {
     else if ((creepList_length-n_attackers-n_range_attackers)  < 1) {
         Game.spawns[main_spawn].spawnCreep([MOVE, WORK, MOVE, CARRY], 'BasicWorker', { memory: { role: undefined , source: sources[0].id, bored: 0} });
     }
-    else if (n_attackers < (Game.spawns[main_spawn].room.controller.level -1 - towers.length)){
+    else if (n_attackers < (Game.spawns[main_spawn].room.controller.level - 2 - towers.length)){
         var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
         var _body = [MOVE, ATTACK];
         var body = [];
@@ -172,7 +172,7 @@ module.exports.loop = function () {
         body.reverse();
         Game.spawns[main_spawn].spawnCreep(body, 'M_Attacker' + Math.floor(Math.random() * 10), { memory: { role: 'attacker' , source: sources[0].id, bored: 0} });
         console.log("Spawning attacker body:", body);
-    }else if (n_range_attackers < (Game.spawns[main_spawn].room.controller.level - 1 - towers.length)){
+    }else if (n_range_attackers < (Game.spawns[main_spawn].room.controller.level - 2 - towers.length)){
         var maxEnergy = Game.spawns[main_spawn].room.energyCapacityAvailable;
         var _body = [MOVE, RANGED_ATTACK];
         var body = [];
