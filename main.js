@@ -13,6 +13,14 @@ module.exports.loop = function () {
     var n_range_attackers = _.filter(Game.creeps, (creep) => creep.memory.role == 'r_attacker').length;
     var n_tower_fill = _.filter(Game.creeps, (creep) => creep.memory.role == 'towerfiller').length;
     var creeps_fillers = _.filter(Game.creeps, (creep) => creep.memory.role == 'extensionfiller');
+    var creeps_spawn_fillers = _.filter(Game.creeps, (creep) => creep.memory.role == 'spawnfiller');
+    var total_resources_spawn_fillers = 0;
+    for (var i in creeps_spawn_fillers){
+        total_resources_spawn_fillers += creeps_spawn_fillers[i].store[RESOURCE_ENERGY];
+    }
+    var spawn_n = Math.floor(total_resources_spawn_fillers/50);
+    console.log("total_resources_spawn_fillers: ", total_resources_spawn_fillers);
+    var n_spawn_fill = creeps_spawn_fillers.length;
     var n_ext_fill = creeps_fillers.length;
     var total_resouce_filling = 0;
     for (var i in creeps_fillers){
