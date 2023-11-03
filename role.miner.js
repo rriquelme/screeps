@@ -56,11 +56,13 @@ var roleMiner = {
                             workPartsCount++;
                         }
                     }
-                    //creep.say('⛏️' + workPartsCount);
+                    //creep.say('⛏️'+ creep.store.getFreeCapacity()+" "+workPartsCount*2);
 
                     creep.memory.bored = 0;
-                    if (creep.store.getFreeCapacity() < workPartsCount*2) {
+                    // x 4 because it is in the future?
+                    if (creep.store.getFreeCapacity() < (workPartsCount*4)) {
                         creep.memory.role = undefined;
+                        //creep.say("cond");
                     }
 
                 }
