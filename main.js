@@ -19,7 +19,8 @@ module.exports.loop = function () {
         total_resources_spawn_fillers += creeps_spawn_fillers[i].store[RESOURCE_ENERGY];
     }
     var spawn_n = Math.floor(total_resources_spawn_fillers/50);
-    console.log("total_resources_spawn_fillers: ", total_resources_spawn_fillers);
+    console.log(spawn_n);
+    //console.log("total_resources_spawn_fillers: ", total_resources_spawn_fillers);
     var n_spawn_fill = creeps_spawn_fillers.length;
     var n_ext_fill = creeps_fillers.length;
     var total_resouce_filling = 0;
@@ -27,7 +28,7 @@ module.exports.loop = function () {
         total_resouce_filling += creeps_fillers[i].store[RESOURCE_ENERGY];
     }
     var cap_ext = Math.floor(total_resouce_filling/50);
-
+    //console.log("cap_ext:",cap_ext);
     var extension_free = Game.spawns[main_spawn].room.find(FIND_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType == STRUCTURE_EXTENSION) &&
@@ -35,7 +36,7 @@ module.exports.loop = function () {
         }
     });
     var extension_free_length = extension_free.length - cap_ext;
-    console.log("extension_free_length: ", extension_free_length);
+    //console.log("extension_free_length: ", extension_free_length);
 
 
     var tower_needs_refill_lenght = -n_tower_fill;
