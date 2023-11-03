@@ -19,10 +19,13 @@ module.exports.loop = function () {
         total_resources_spawn_fillers += creeps_spawn_fillers[i].store[RESOURCE_ENERGY];
     }
     var spawn_n = Math.floor(total_resources_spawn_fillers/50);
-    console.log(spawn_n);
+    var spawn_to_fill = Math.ceil(Game.spawns[main_spawn].store.getFreeCapacity(RESOURCE_ENERGY) / 50) - spawn_n;
+    //console.log(spawn_to_fill,spawn_n,Math.ceil(Game.spawns[main_spawn].store.getFreeCapacity(RESOURCE_ENERGY) / 50));
+
+
     //console.log("total_resources_spawn_fillers: ", total_resources_spawn_fillers);
-    var n_spawn_fill = creeps_spawn_fillers.length;
-    var n_ext_fill = creeps_fillers.length;
+    //var n_spawn_fill = creeps_spawn_fillers.length;
+    //var n_ext_fill = creeps_fillers.length;
     var total_resouce_filling = 0;
     for (var i in creeps_fillers){
         total_resouce_filling += creeps_fillers[i].store[RESOURCE_ENERGY];
@@ -110,13 +113,14 @@ module.exports.loop = function () {
             creep.say("TF");
          }
          else if ((creep.memory.role == undefined || creep.memory.role == 'spawnfiller') && extension_free_length > 0 ) {
-             creep.memory.role = 'extensionfiller';
-             extension_free_length -= Math.floor(creep.store[RESOURCE_ENERGY]/50);
-             creep.say("EF");
+            creep.memory.role = 'extensionfiller';
+            extension_free_length -= Math.floor(creep.store[RESOURCE_ENERGY]/50);
+            creep.say("EF");
          }
-         else if (creep.memory.role == undefined && Game.spawns[main_spawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-             creep.memory.role = 'spawnfiller';
-             creep.say("SF");
+         else if (creep.memory.role == undefined && spawn_to_fill > 0) {
+            spawn_to_fill -= Math.floor(creep.store[RESOURCE_ENERGY]/50);
+            creep.memory.role = 'spawnfiller';
+            creep.say("SF");
          }
         else if (creep.memory.role == undefined  && structures_to_repair_length > 0) {
             creep.memory.role = 'repairer';
