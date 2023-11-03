@@ -95,12 +95,12 @@ module.exports.loop = function () {
             creep.suicide();
         }
         else if (creep.store[RESOURCE_ENERGY] == 0 && creep.memory.role == undefined) {
-             creep.memory.role = "miner";
-             creep.say("M");
+            creep.memory.role = "miner";
+            creep.say("M");
          }
          else if (creep.memory.role == undefined && 50 > creep.store[RESOURCE_ENERGY]) {
-             creep.memory.role = "miner";
-             creep.say("M");
+            creep.memory.role = "miner";
+            creep.say("M");
          }
          else if (creep.memory.role == undefined && n_upgraders < 1 && (creepList_length-n_attackers-n_range_attackers)  > 3 ){
             creep.memory.role = 'upgrader';
