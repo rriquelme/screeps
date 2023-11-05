@@ -66,7 +66,7 @@ module.exports.loop = function () {
             Game.spawns[main_spawn].room.controller.activateSafeMode();
         }
         var closestDamagedStructure = towers[i].pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (structure) => 2*structure.hits < structure.hitsMax
+            filter: (structure) => 10*structure.hits < structure.hitsMax
         });
         if (closestDamagedStructure) {
             towers[i].repair(closestDamagedStructure);
@@ -97,31 +97,31 @@ module.exports.loop = function () {
         else if (creep.store[RESOURCE_ENERGY] == 0 && creep.memory.role == undefined) {
             creep.memory.role = "miner";
             creep.say("M");
-         }
-         else if (creep.memory.role == undefined && 50 > creep.store[RESOURCE_ENERGY]) {
+        }
+        else if (creep.memory.role == undefined && 50 > creep.store[RESOURCE_ENERGY]) {
             creep.memory.role = "miner";
             creep.say("M");
-         }
-         else if (creep.memory.role == undefined && n_upgraders < 1 && (creepList_length-n_attackers-n_range_attackers)  > 3 ){
+        }
+        else if (creep.memory.role == undefined && n_upgraders < 1 && (creepList_length-n_attackers-n_range_attackers)  > 3 ){
             creep.memory.role = 'upgrader';
             creep.say("U");
             n_upgraders +=1;
-         }
-         else if (creep.memory.role == undefined && tower_needs_refill_lenght >0 && (creepList_length-n_attackers-n_range_attackers)  > 3 ){
-            creep.memory.role = 'towerfiller';
-            tower_needs_refill_lenght -= 1;
-            creep.say("TF");
-         }
-         else if ((creep.memory.role == undefined || creep.memory.role == 'spawnfiller') && extension_free_length > 0 ) {
-            creep.memory.role = 'extensionfiller';
+        }
+        else if ((creep.memory.role == undefined || creep.memory.role == 'spawnfiller') && extension_free_length > 0 ) {
+        creep.memory.role = 'extensionfiller';
             extension_free_length -= Math.floor(creep.store[RESOURCE_ENERGY]/50);
             creep.say("EF");
-         }
-         else if (creep.memory.role == undefined && spawn_to_fill > 0) {
+        }
+        else if (creep.memory.role == undefined && spawn_to_fill > 0) {
             spawn_to_fill -= Math.floor(creep.store[RESOURCE_ENERGY]/50);
             creep.memory.role = 'spawnfiller';
             creep.say("SF");
-         }
+        }
+        else if (creep.memory.role == undefined && tower_needs_refill_lenght >0 && (creepList_length-n_attackers-n_range_attackers)  > 3 ){
+            creep.memory.role = 'towerfiller';
+            tower_needs_refill_lenght -= 1;
+            creep.say("TF");
+        }
         else if (creep.memory.role == undefined  && structures_to_repair_length > 0) {
             creep.memory.role = 'repairer';
             structures_to_repair_length -=1
